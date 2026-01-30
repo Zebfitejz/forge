@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FORGE</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="brandBlock">
+      <div class="brand">FORGE</div>
+      <div class="tagline">Short quests. Real momentum.</div>
+    </div>
+    <div class="hud">
+      <div class="pill" id="hudStreak">Streak: —</div>
+      <div class="pill" id="hudLevel">Level: —</div>
+      <div class="pill" id="hudXP">XP: —</div>
+      <div class="pill" id="hudTokens">Tokens: —</div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="home">Home</button>
+    <button class="tab" data-tab="quest">Quest</button>
+    <button class="tab" data-tab="log">Log</button>
+    <button class="tab" data-tab="store">Store</button>
+    <button class="tab" data-tab="settings">Settings</button>
+  </nav>
+
+  <main class="container">
+    <!-- HOME -->
+    <section class="screen" id="screen-home">
+      <div class="card">
+        <div class="row">
+          <h2>Today</h2>
+          <button class="ghost" id="btnResetToday">Reset Today</button>
+        </div>
+
+        <div class="subtle muted" id="todayMsg"></div>
+
+        <div class="questGrid" id="questGrid"></div>
+
+        <div class="divider"></div>
+
+        <div class="row wrap">
+          <button class="primary" id="btnGoQuest" disabled>Go to Quest</button>
+          <button class="secondary" id="btnQuickSave">Quick Save Quest (6 min)</button>
+        </div>
+
+        <div class="tiny muted">
+          Core rule: you should usually finish feeling better than when you started and slightly disappointed it’s over.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Anchors (no tracking)</h2>
+        <div class="muted">Two real meals most days. Each meal = protein + fiber + carbs OR fats.</div>
+
+        <div class="anchors">
+          <label class="check"><input type="checkbox" id="aProtein"> Protein anchor</label>
+          <label class="check"><input type="checkbox" id="aFiber"> Fiber anchor</label>
+          <label class="check"><input type="checkbox" id="aTreat"> Treat slot used</label>
+        </div>
+
+        <div class="row">
+          <button class="secondary" id="btnSaveAnchors">Save anchors</button>
+          <div class="muted" id="anchorsSaved"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Identity traits</h2>
+        <div class="muted">Traits grow slowly through repeated wins (not random).</div>
+        <div class="traits" id="traits"></div>
+      </div>
+    </section>
+
+    <!-- QUEST -->
+    <section class="screen hidden" id="screen-quest">
+      <div class="card">
+        <div class="row">
+          <h2>Quest</h2>
+          <div class="pill" id="questBadge">No quest selected</div>
+        </div>
+
+        <div class="subcard" id="questPanel">
+          <div class="row">
+            <div>
+              <div class="h3" id="questTitle">—</div>
+              <div class="muted" id="questDesc">Select a quest on Home.</div>
+            </div>
+
+            <div class="timerBox">
+              <div class="timer" id="timerText">00:00</div>
+              <div class="muted" id="timerHint">Tap Start</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div id="questSteps"></div>
+
+          <div class="divider"></div>
+
+          <div class="row wrap gap">
+            <button class="primary" id="btnStart" disabled>Start</button>
+            <button class="secondary" id="btnPause" disabled>Pause</button>
+            <button class="secondary" id="btnFinish" disabled>Complete</button>
+          </div>
+
+          <div class="tiny muted">
+            Language rule: relief, reset, momentum, win, forge. No punishment framing.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Progress guidance (auto)</h2>
+        <div class="muted">Progression rule: never increase difficulty two sessions in a row (per exercise).</div>
+        <div id="progressPanel" class="subcard"></div>
+      </div>
+
+      <div class="card">
+        <h2>Decompression ritual</h2>
+        <div class="muted">Pick a consistent cue. Keep it easy.</div>
+        <div class="chips" id="ritualChips"></div>
+        <div class="divider"></div>
+        <div class="muted">Post-quest reward prompt (choose one):</div>
+        <div class="chips" id="rewardChips"></div>
+      </div>
+    </section>
+
+    <!-- LOG -->
+    <section class="screen hidden" id="screen-log">
+      <div class="card">
+        <div class="row">
+          <h2>History</h2>
+          <div class="row gap">
+            <button class="ghost" id="btnExport">Export</button>
+            <button class="ghost" id="btnImport">Import</button>
+          </div>
+        </div>
+        <div id="history"></div>
+      </div>
+    </section>
+
+    <!-- STORE -->
+    <section class="screen hidden" id="screen-store">
+      <div class="card">
+        <div class="row">
+          <h2>Permissions Store</h2>
+          <button class="ghost" id="btnAddPermission">Add</button>
+        </div>
+        <div class="muted">Tokens are choices. Spending is never punished.</div>
+        <div id="permList" class="permList"></div>
+      </div>
+
+      <div class="card">
+        <h2>Surprise bonus tokens (ethical + capped)</h2>
+        <div class="muted" id="bonusExplainer">—</div>
+        <div class="subcard">
+          <div class="row">
+            <div>
+              <div class="h3">Daily cap</div>
+              <div class="muted" id="capDaily">—</div>
+            </div>
+            <div>
+              <div class="h3">Weekly cap</div>
+              <div class="muted" id="capWeekly">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tiny muted">
+          Bonus chance increases with weekly consistency, not time spent.
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="screen hidden" id="screen-settings">
+      <div class="card">
+        <h2>Settings</h2>
+        <div class="subcard">
+          <label class="check">
+            <input type="checkbox" id="toggleAlcohol">
+            Allow alcohol permissions
+          </label>
+          <div class="tiny muted">If off, alcohol-category permissions will be hidden.</div>
+        </div>
+
+        <div class="subcard">
+          <div class="row">
+            <div>
+              <div class="h3">Notifications</div>
+              <div class="muted">This PWA does not push notifications by default.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="subcard">
+          <div class="row">
+            <div>
+              <div class="h3">Data safety</div>
+              <div class="muted">Everything is stored locally on your device unless you export.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tiny muted">
+          This app is for personal use. Always listen to your body.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: workout completion -->
+  <div class="modal hidden" id="modal">
+    <div class="modalCard">
+      <div class="row">
+        <h2>Complete Quest</h2>
+        <button class="ghost" id="btnCloseModal">Close</button>
+      </div>
+
+      <div class="muted" id="modalQuestMeta">—</div>
+      <div class="divider"></div>
+
+      <div id="workoutForm"></div>
+
+      <div class="divider"></div>
+
+      <div class="row wrap gap">
+        <button class="primary" id="btnConfirmComplete">Forge it</button>
+        <button class="secondary" id="btnCancelComplete">Cancel</button>
+      </div>
+
+      <div class="tiny muted">
+        Progress rule is enforced by guidance (no punishment). If you progress today, the engine will recommend holding next time.
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
